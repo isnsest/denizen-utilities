@@ -1,0 +1,7 @@
+name: denizen-utilities
+author: isnsest
+version: ${version}
+main: com.isnsest.denizen.DenizenUtilities
+description: Extending Denizen for greater capabilities
+depend: [Denizen]
+api-version: '1.21'
