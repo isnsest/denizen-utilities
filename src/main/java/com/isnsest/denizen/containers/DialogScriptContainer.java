@@ -55,93 +55,139 @@ public class DialogScriptContainer extends ScriptContainer {
     // @name Dialog Script Containers
     // @group Script Container System
     // @description
-    // Dialog script containers define custom Paper UI windows.
+    // Dialog script containers define custom UI dialogs using the Paper dialog system.
+    //
+    // Each dialog requires a 'base' section that defines general properties and the dialog type.
+    //
+    // TYPES:
+    // - confirm : Two-button confirmation dialog (yes/no)
+    // - notice  : Simple dialog with a single button
+    // - list    : Shows a list of other dialog scripts
+    // - multi   : Grid layout with multiple action buttons
     //
     // <code>
     // Dialog_Script_Name:
     //     type: dialog
     //
-    //     # General Window Settings
     //     base:
-    //         title: <yellow>Main Menu # (Required)
-    //         type: multi # (Required) confirm, list, notice, multi
+    //         title: <yellow>Main Menu
+    //         type: multi
+    //
+    //         # Optional window settings
     //         external title: App Title
     //         can close with escape: true
-    //         columns: 3 # Layout for 'list' or 'multi'
+    //
+    //         # Layout columns (list or multi)
+    //         columns: 3
+    //
+    //         # Button layout option (only for 'list')
     //         button width: 100
-    //         exit button: # ActionButton format
+    //
+    //         # Exit button (ONLY for 'multi')
+    //         exit button:
     //             label: Exit
     //
-    //     # For 'list' type only (Root level!)
+    //     # only for 'list'
     //     dialogs:
     //     - other_dialog_script
     //
-    //     # Static content (Root level!)
+    //     # Static content displayed in the dialog
     //     bodies:
     //         my_text:
     //             type: message
     //             message: Hello!
     //
-    //     # Data collection (Root level!)
+    //     # Input fields
     //     inputs:
-    //         my_input:
+    //         1:
     //             type: text
     //             key: custom_context_name
     //             label: Name
+    //         my_input:
+    //             type: text
+    //             label: Name2
     //
-    //     # Interaction (Root level!)
-    //     # 'multi' uses 'buttons:', 'confirm' uses 'yes:'/'no:', 'notice' uses 'button:'
+    //     # Interaction buttons
+    //     # 'multi' uses 'buttons:'
+    //     # 'confirm' uses 'yes:' and 'no:'
+    //     # 'notice' uses 'button:'
     //     buttons:
-    //         action_key:
+    //         submit:
     //             label: Submit
     //             script:
-    //             - narrate "Context is <context.custom_context_name>"
+    //             - narrate "Context is <context.custom_context_name>, <context.my_input>"
     // </code>
+    //
+    // Script actions also have:
+    // <context.connection>
     // -->
 
     // <--[language]
     // @name Dialog Inputs
     // @group Script Container System
     // @description
-    // Collects player data. Values are retrieved via <context.[key_name]>.
+    // Dialog inputs collect player data that becomes available in the script context.
+    //
+    // Input values can be accessed via:
+    // <context.[key]>
     //
     // TYPES:
     //
-    // TEXT:
+    // TEXT
+    // A text input field.
+    //
     // - type: text
     // - label: <text> (Required)
+    // - key: <context_key>
     // - initial: <text>
     // - width: <number>
     // - max length: <number>
     // - label visible: true/false
+    //
+    // Multiline options:
     // - multiline options:
     //     max lines: <number>
     //     height: <number>
     //
-    // BOOLEAN:
+    //
+    // BOOLEAN
+    // A toggle switch input.
+    //
     // - type: boolean
     // - label: <text> (Required)
+    // - key: <context_key>
     // - initial: true/false
     // - on true: <label>
     // - on false: <label>
     //
-    // NUMBER:
+    //
+    // NUMBER
+    // A numeric range slider.
+    //
     // - type: number
     // - label: <text> (Required)
+    // - key: <context_key>
     // - start: <float> (Required)
     // - end: <float> (Required)
     // - initial: <float>
     // - step: <float>
     // - width: <number>
-    // - label format: <text> (e.g. "Value: %s")
+    // - label format: <text>
+    //   Example: "Value: %s"
     //
-    // SINGLE:
+    //
+    // SINGLE
+    // A single-choice selection list.
+    //
     // - type: single
     // - label: <text> (Required)
+    // - key: <context_key>
     // - label visible: true/false
     // - width: <number>
-    // - options:
-    //     opt_1:
+    //
+    // Options:
+    //   options:
+    //     option_name:
     //         id: unique_id
     //         display: <text>
     //         initial: true/false
@@ -151,38 +197,87 @@ public class DialogScriptContainer extends ScriptContainer {
     // @name Dialog Buttons
     // @group Script Container System
     // @description
-    // Buttons trigger actions. Available as 'yes'/'no' (confirm), 'button' (notice), or 'bффффффффффффuttons' (multi).
-    // Fields:
+    // Buttons define interactive actions within dialogs.
+    //
+    // Button sections depend on dialog type:
+    //
+    // confirm dialog:
+    // - yes:
+    // - no:
+    //
+    // notice dialog:
+    // - button:
+    //
+    // multi dialog:
+    // - buttons:
+    //
+    // Button fields:
+    //
     // - label: <text> (Required)
     // - tooltip: <text>
     // - width: <number>
     // - type: SCRIPT, RUN_COMMAND, OPEN_URL, COPY_TO_CLIPBOARD
     //
     // ACTION TYPES:
-    // - SCRIPT: Runs 'script:' block. Has <context.connection> and <context.[input_keys]>.
-    // - RUN_COMMAND: Runs 'command:'.
-    // - OPEN_URL: Opens 'url:'.
-    // - COPY_TO_CLIPBOARD: Copies 'text:'.
+    //
+    // SCRIPT (default)
+    // Runs a script block.
+    //
+    // Example:
+    // script:
+    // - narrate "Hello"
+    //
+    // Available context values:
+    // <context.connection>
+    // <context.[input_keys]>
+    //
+    //
+    // RUN_COMMAND
+    // Runs a command when clicked.
+    //
+    // command: spawn
+    //
+    //
+    // OPEN_URL
+    // Opens a web URL.
+    //
+    // url: https://example.com
+    //
+    //
+    // COPY_TO_CLIPBOARD
+    // Copies text to the player's clipboard.
+    //
+    // text: Hello world
     // -->
 
     // <--[language]
     // @name Dialog Bodies
     // @group Script Container System
     // @description
-    // Static content displayed in the dialog window.
+    // Bodies define static content displayed inside the dialog.
     //
-    // MESSAGE:
+    // MESSAGE
+    // Displays formatted text.
+    //
     // - type: message
     // - message: <text> (Required)
     // - width: <number>
     //
-    // ITEM:
+    //
+    // ITEM
+    // Displays an item preview.
+    //
     // - type: item
     // - item: <ItemTag> (Required)
-    // - width/height: <number>
+    // - width: <number>
+    // - height: <number>
     // - show tooltip: true/false
     // - show decorations: true/false
-    // - description: (A nested 'message' type body)
+    //
+    // Optional description:
+    // - description:
+    //     type: message
+    //     message: <text>
     // -->
 
     public DialogScriptContainer(YamlConfiguration configurationSection, String scriptContainerName) {
@@ -325,7 +420,7 @@ public class DialogScriptContainer extends ScriptContainer {
                         .type(multiActionType.build()));
             }
             default -> {
-                Debug.echoError("Unknown input type: " + type);
+                Debug.echoError("Unknown dialog type: " + type);
                 return null;
             }
         }
