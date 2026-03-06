@@ -5,6 +5,7 @@ import com.denizenscript.denizencore.objects.ObjectFetcher;
 import com.isnsest.denizen.containers.DialogScriptContainer;
 import com.isnsest.denizen.events.PlayerConnectionConfigureEvent;
 import com.isnsest.denizen.objects.ConnectionTag;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.denizenscript.denizen.nms.NMSHandler;
 import com.denizenscript.denizen.nms.NMSVersion;
@@ -39,6 +40,13 @@ public class DenizenUtilities extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
         register();
+
+        metrics.addCustomChart(
+            new Metrics.SimplePie("Denizen", () -> Bukkit.getPluginManager().getPlugin("Denizen").getDescription().getVersion())
+        );
+        metrics.addCustomChart(
+            new Metrics.SimplePie("dDiscordBot", () -> Bukkit.getPluginManager().getPlugin("dDiscordBot").getDescription().getVersion())
+        );
 
         Debug.log("denizen-utilities", "loaded!");
     }
