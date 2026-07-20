@@ -34,7 +34,7 @@ public class PlayerLinksDiscordAccountScriptEvent extends ScriptEvent implements
 
     public PlayerLinksDiscordAccountScriptEvent() {
         instance = this;
-        registerCouldMatcher("on player links discord account");
+        registerCouldMatcher("player links discord account");
     }
 
     @Override
