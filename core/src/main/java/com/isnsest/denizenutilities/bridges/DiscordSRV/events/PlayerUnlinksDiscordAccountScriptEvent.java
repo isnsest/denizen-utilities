@@ -34,7 +34,7 @@ public class PlayerUnlinksDiscordAccountScriptEvent extends ScriptEvent implemen
 
     public PlayerUnlinksDiscordAccountScriptEvent() {
         instance = this;
-        registerCouldMatcher("on player unlinks discord account");
+        registerCouldMatcher("player unlinks discord account");
     }
 
     @Override
