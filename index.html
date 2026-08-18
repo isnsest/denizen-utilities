@@ -178,6 +178,16 @@
     .alert-deprecated span { display: block; font-size: 1.1rem; color: #fff; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 800; }
     .alert-deprecated p { margin: 0; color: #fca5a5; font-size: 0.9rem; line-height: 1.5; }
 
+    .info-box {
+        background: rgba(59, 130, 246, 0.08);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        color: #93c5fd;
+        padding: 1.25rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+    .info-box strong { color: #fff; }
+
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
@@ -324,6 +334,20 @@
             </button>
             <div class="sub-folder-content" id="sub-dsrv-ext">
                 <a class="nav-item" data-tab="tab-dsrv-ext-player">PlayerTag</a>
+            </div>
+        </div>
+
+        <!-- ViaVersion -->
+        <button class="folder-btn" onclick="toggleFolder('folder-via', this)">
+            <span style="display:flex;align-items:center;gap:8px"><i class="fas fa-network-wired" style="color:#34d399;font-size:0.9rem"></i> ViaVersion</span>
+            <i class="fas fa-chevron-right chevron" id="icon-folder-via"></i>
+        </button>
+        <div class="folder-content" id="folder-via">
+            <button class="sub-folder-btn" onclick="toggleSubFolder('sub-via-ext', this)">
+                Extensions <i class="fas fa-chevron-right chevron" id="icon-sub-via-ext"></i>
+            </button>
+            <div class="sub-folder-content" id="sub-via-ext">
+                <a class="nav-item" data-tab="tab-via-ext-connection">ConnectionTag</a>
             </div>
         </div>
     </div>
@@ -704,7 +728,7 @@
             <div class="spec-container">
                 <div class="spec-row">
                     <div class="spec-key"><span class="name-label">WAIT:&lt;DurationTag&gt;</span><span class="badge b-det">Determine</span></div>
-                    <div class="spec-val">Delays the configuration process by the specified duration (e.g. <code>WAIT:1m</code>). During this time, you can show Dialogs or process backend tasks. If the process is not finished manually via the <code>connect</code> mechanism within this timeframe, the connection will be dropped.</div>
+                    <div class="spec-val">Delays the configuration process by the specified duration (e.g. <code>WAIT:1m</code>). During this time, you can show Dialogs or process backend tasks. If no WAIT determination is specified, the configuration process completes immediately.</div>
                 </div>
             </div>
         </div>
@@ -779,16 +803,24 @@
             <h2>Tags</h2>
             <div class="spec-container">
                 <div class="spec-row">
-                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.is_connected&gt;</span></div>
+                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.is_connected&gt;</span><span class="badge b-tag">ElementTag(Boolean)</span></div>
                     <div class="spec-val">Returns whether this connection is currently open and active.</div>
                 </div>
                 <div class="spec-row">
-                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.uuid&gt;</span></div>
-                    <div class="spec-val">Returns the <code>ElementTag</code> containing the player profile's UUID associated with this connection.</div>
+                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.uuid&gt;</span><span class="badge b-tag">ElementTag</span></div>
+                    <div class="spec-val">Returns the player profile's UUID associated with this connection.</div>
                 </div>
                 <div class="spec-row">
-                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.name&gt;</span></div>
-                    <div class="spec-val">Returns the <code>ElementTag</code> containing the player profile's name associated with this connection.</div>
+                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.name&gt;</span><span class="badge b-tag">ElementTag</span></div>
+                    <div class="spec-val">Returns the player profile's name associated with this connection.</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.viaversion_protocol&gt;</span><span class="badge b-tag">ElementTag(Number)</span></div>
+                    <div class="spec-val">Returns the raw protocol version number of the player's client via ViaVersion (e.g., 765).</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.viaversion_version&gt;</span><span class="badge b-tag">ElementTag</span></div>
+                    <div class="spec-val">Returns the human-readable Minecraft client version name via ViaVersion (e.g., "1.20.4", "1.16.5").</div>
                 </div>
             </div>
 
@@ -804,7 +836,11 @@
                 </div>
                 <div class="spec-row">
                     <div class="spec-key"><span class="name-label">reconfigure</span><span class="badge b-opt">Input: None</span></div>
-                    <div class="spec-val">Completes the configuration for this player, which will cause this player to reenter the game. Note: this should only be called if you are reconfiguring the player.</div>
+                    <div class="spec-val">Completes the configuration for this player, causing them to reenter configuration/game phase.</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">transfer</span><span class="badge b-req">Input: ElementTag</span></div>
+                    <div class="spec-val">Natively transfers the client to another Minecraft server (host or host:port) using Minecraft 1.20.5+ Transfer Packet without needing BungeeCord/Velocity. Example: <code>transfer:play.example.com:25565</code>.</div>
                 </div>
                 <div class="spec-row">
                     <div class="spec-key"><span class="name-label">show_dialog</span><span class="badge b-req">Input: ScriptTag</span></div>
@@ -821,6 +857,14 @@
             <div class="breadcrumb">Objects <i class="fas fa-chevron-right"></i> <span>PlayerTag</span></div>
             <h1>PlayerTag</h1>
             <p class="subtitle">Additions for interacting with Players.</p>
+
+            <h2>Tags</h2>
+            <div class="spec-container">
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">&lt;PlayerTag.connection&gt;</span><span class="badge b-tag">ConnectionTag</span></div>
+                    <div class="spec-val">Returns the active <code>ConnectionTag</code> associated with this online player. Allows accessing network connection mechanisms and tags (such as ViaVersion protocol/version or native server transfer) directly from a PlayerTag. Example: <code>&lt;player.connection.viaversion_version&gt;</code>.</div>
+                </div>
+            </div>
 
             <h2>Mechanisms</h2>
             <div class="spec-container">
@@ -844,6 +888,12 @@
             <div class="signature">- <span class="sig-cmd">bmmodel</span> <span class="sig-arg">entity:&lt;entity&gt;</span> <span class="sig-arg">model:&lt;model&gt;</span> <span class="sig-opt">(remove)</span></div>
             <p>Attaches a specific BetterModel to an entity or removes an existing one. An entity can have multiple models at once.</p>
 
+            <div class="info-box" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.25); color: #fde68a;">
+                <strong>Pre-configuration Sub-block Support:</strong><br>
+                The <code>bmmodel</code> command now supports passing a YAML sub-content block directly under the command to pre-configure mechanisms on model creation.<br>
+                <em>Note: Some mechanisms normally take effect only after animation playback, so using this pre-configuration feature is strongly recommended.</em>
+            </div>
+
             <div class="spec-container">
                 <div class="spec-row"><div class="spec-key"><span class="name-label">entity:</span><span class="badge b-req">Required</span></div><div class="spec-val">The target entity to attach or detach the model from.</div></div>
                 <div class="spec-row"><div class="spec-key"><span class="name-label">model:</span><span class="badge b-req">Required</span></div><div class="spec-val">The model name (must exist in BetterModel's loaded models).</div></div>
@@ -851,9 +901,15 @@
             </div>
 
             <div class="code-block">
-                <div class="code-header"><span class="code-title">Usage</span></div>
+                <div class="code-header"><span class="code-title">Usage & Pre-configuration Example</span></div>
                 <pre><span class="s-k">-</span> <span class="s-v">bmmodel</span> <span class="s-s">entity:&lt;context.entity&gt; model:dragon</span>
-<span class="s-k">-</span> <span class="s-v">bmmodel</span> <span class="s-s">entity:&lt;context.entity&gt; model:dragon remove</span></pre>
+<span class="s-k">-</span> <span class="s-v">bmmodel</span> <span class="s-s">entity:&lt;context.entity&gt; model:dragon remove</span>
+
+<span class="s-c"># Pre-configuring model mechanisms on creation:</span>
+<span class="s-k">-</span> <span class="s-v">bmmodel</span> <span class="s-s">entity:&lt;player&gt; model:dragon:</span>
+    <span class="s-k">glow:</span> <span class="s-v">true</span>
+    <span class="s-k">glow_color:</span> <span class="s-v">red</span>
+    <span class="s-k">model_scale:</span> <span class="s-v">1.5</span></pre>
             </div>
         </div>
 
@@ -1054,14 +1110,14 @@
             </div>
         </div>
 
-        <!-- ===== BETTERMODEL OBJECTS (REORDERED: BMActiveModelTag -> BMModelTag -> BMBoneTag) ===== -->
+        <!-- ===== BETTERMODEL OBJECTS (BMActiveModelTag -> Structured in 2 Blocks) ===== -->
         <div id="tab-bm-obj-model" class="tab-panel">
             <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> BetterModel <i class="fas fa-chevron-right"></i> Objects <i class="fas fa-chevron-right"></i> <span>BMActiveModelTag</span></div>
             <h1>BMActiveModelTag</h1>
             <p class="subtitle">Prefix: <code>bmactivemodel@</code>. Represents an active tracker instance currently spawned and displaying in the game world.</p>
             <div class="signature">Format: <span class="sig-cmd">bmactivemodel@</span>&lt;entity_uuid&gt;/<span class="sig-return">&lt;model_name&gt;</span></div>
 
-            <h3>Tags</h3>
+            <h2>Tags</h2>
             <div class="spec-container">
                 <div class="spec-row">
                     <div class="spec-key"><span class="name-label">&lt;BMActiveModelTag.entity&gt;</span><span class="badge b-tag">EntityTag</span></div>
@@ -1101,24 +1157,41 @@
                 </div>
             </div>
 
-            <h3>Mechanisms</h3>
+            <h2>Mechanisms</h2>
+
+            <!-- BLOCK 1: Global / Model-Level Operations -->
+            <div class="info-box">
+                <strong>Block 1: Global / Model-Level Mechanisms</strong><br>
+                These mechanisms operate natively on the model tracker as a single unified structure. They rotate, scale, or modify the entire model as a whole.
+            </div>
+
             <div class="spec-container">
-                <div class="spec-row"><div class="spec-key"><span class="name-label">billboard</span><span class="badge b-mech">ElementTag</span></div><div class="spec-val">Globally sets the billboard mode for <strong>all</strong> bones in the model (e.g. CENTER, VERTICAL, HORIZONTAL).</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">view_range</span><span class="badge b-mech">Decimal</span></div><div class="spec-val">Globally sets the view range for all bones in this model.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">brightness</span><span class="badge b-mech">ElementTag</span></div><div class="spec-val">Globally overrides the brightness for all bones. Format: <code>block_light,sky_light</code> (e.g., <code>15,15</code>).</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">glow</span><span class="badge b-mech">Boolean</span></div><div class="spec-val">Globally toggles glow on the entire model.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">glow_color</span><span class="badge b-mech">ColorTag</span></div><div class="spec-val">Globally sets glow color for all bones.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">tint</span><span class="badge b-mech">ColorTag</span></div><div class="spec-val">Globally sets tint color for all bones.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">model_scale</span><span class="badge b-mech">Decimal</span></div><div class="spec-val">Applies a uniform global size multiplier to the entire model proportionally, preserving relative bone geometry and pivot points.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">model_rotation</span><span class="badge b-mech">QuaternionTag</span></div><div class="spec-val">Rotates the entire model as a single object (unlike <code>rotation</code> which turns each bone separately around its own center).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">billboard</span><span class="badge b-mech">ElementTag</span></div><div class="spec-val">Globally sets the billboard mode for the model tracker (CENTER, VERTICAL, HORIZONTAL).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">view_range</span><span class="badge b-mech">Decimal</span></div><div class="spec-val">Globally sets the rendering view range for the model.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">brightness</span><span class="badge b-mech">MapTag</span></div><div class="spec-val">Globally overrides the display entity brightness. Format: MapTag with <code>block</code> and <code>sky</code> keys (0-15).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">glow</span><span class="badge b-mech">Boolean</span></div><div class="spec-val">Globally toggles glowing effect on the entire model.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">glow_color</span><span class="badge b-mech">ColorTag</span></div><div class="spec-val">Globally sets the glow color for the model.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">tint</span><span class="badge b-mech">ColorTag</span></div><div class="spec-val">Globally sets tint color for all bones in the model.</div></div>
                 <div class="spec-row"><div class="spec-key"><span class="name-label">visible</span><span class="badge b-mech">Boolean</span></div><div class="spec-val">Globally toggles visibility of the entire model.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">skin</span><span class="badge b-mech">ElementTag</span></div><div class="spec-val">Changes the skin of the active model to the player skin associated with the specified UUID. This is especially useful when working with limb models.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">item</span><span class="badge b-mech">ItemTag</span></div><div class="spec-val">Globally overrides the item displayed on all bones.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">scale</span><span class="badge b-mech">LocationTag</span></div><div class="spec-val">Globally overrides the scale for all bones (XYZ vector format).</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">model_scale</span><span class="badge b-mech">Decimal</span></div><div class="spec-val">Applies a uniform global size multiplier to the entire model proportionally.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">translation</span><span class="badge b-mech">LocationTag</span></div><div class="spec-val">Globally overrides translation vectors for all model bones.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">rotation</span><span class="badge b-mech">QuaternionTag</span></div><div class="spec-val">Globally sets a custom rotation modifier for all bones.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">skin</span><span class="badge b-mech">ElementTag</span></div><div class="spec-val">Changes the skin of the active model to the player skin associated with the specified UUID or PlayerTag. Preserves bone scale, position, and translation transforms.</div></div>
                 <div class="spec-row"><div class="spec-key"><span class="name-label">hide_from</span><span class="badge b-mech">ListTag(PlayerTag)</span></div><div class="spec-val">Hides the entire model from the specified list of players.</div></div>
                 <div class="spec-row"><div class="spec-key"><span class="name-label">show_to</span><span class="badge b-mech">ListTag(PlayerTag)</span></div><div class="spec-val">Makes the model visible again to the specified list of players.</div></div>
-                <div class="spec-row"><div class="spec-key"><span class="name-label">force_update</span><span class="badge b-mech">None</span></div><div class="spec-val">Manually forces a full synchronization update.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">force_update</span><span class="badge b-mech">None</span></div><div class="spec-val">Manually forces a full synchronization update (bones, metadata, and hitboxes).</div></div>
+            </div>
+
+            <!-- BLOCK 2: Bulk Per-Bone Convenience Mechanisms -->
+            <div class="info-box" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.25); color: #a7f3d0;">
+                <strong>Block 2: Bulk Per-Bone Convenience Mechanisms</strong><br>
+                These mechanisms are provided for convenience. Under the hood, they iterate over <em>every individual bone</em> in the model and apply a flat parameter override to each bone (equivalent to executing a Denizen <code>foreach</code> loop over <code>BMBoneTag</code>s).
+            </div>
+
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">item</span><span class="badge b-mech">ItemTag</span></div><div class="spec-val">Overrides the item display on every individual bone in the model.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">scale</span><span class="badge b-mech">LocationTag</span></div><div class="spec-val">Applies a flat scale vector (XYZ) override to every individual bone in the model. Note: For proportional model resizing, use <code>model_scale</code> in Block 1 instead.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">translation</span><span class="badge b-mech">LocationTag</span></div><div class="spec-val">Applies a flat translation vector (XYZ) override to every individual bone in the model.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">rotation</span><span class="badge b-mech">QuaternionTag</span></div><div class="spec-val">Applies a local rotation modifier to every individual bone in the model.</div></div>
             </div>
         </div>
 
@@ -1314,6 +1387,26 @@
 
             <div class="spec-container">
                 <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;PlayerTag.discord_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the Discord snowflake ID associated with the Minecraft player's account via DiscordSRV. Returns <code>null</code> if the player has not linked their Discord account.</div></div>
+            </div>
+        </div>
+
+
+        <!-- ===== VIAVERSION TABS ===== -->
+
+        <div id="tab-via-ext-connection" class="tab-panel">
+            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> ViaVersion <i class="fas fa-chevron-right"></i> Extensions <i class="fas fa-chevron-right"></i> <span>ConnectionTag</span></div>
+            <h1>ConnectionTag (Extensions)</h1>
+            <p class="subtitle">Tags injected into ConnectionTag objects by the ViaVersion bridge.</p>
+
+            <div class="spec-container">
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.viaversion_protocol&gt;</span><span class="badge b-tag">ElementTag(Number)</span></div>
+                    <div class="spec-val">Returns the raw protocol version number of the player's client via ViaVersion (e.g., 765).</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.viaversion_version&gt;</span><span class="badge b-tag">ElementTag</span></div>
+                    <div class="spec-val">Returns the human-readable Minecraft client version name via ViaVersion (e.g., "1.20.4", "1.16.5").</div>
+                </div>
             </div>
         </div>
 
