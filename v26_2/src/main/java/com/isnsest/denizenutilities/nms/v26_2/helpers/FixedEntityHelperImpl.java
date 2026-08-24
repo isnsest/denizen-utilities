@@ -1,4 +1,4 @@
-package com.isnsest.denizenutilities.nms.v26_1.helpers;
+package com.isnsest.denizenutilities.nms.v26_2.helpers;
 
 import com.denizenscript.denizen.nms.NMSHandler;
 import com.denizenscript.denizen.nms.v26_2.helpers.EntityDataNameMapper;

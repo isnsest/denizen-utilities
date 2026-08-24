@@ -1,8 +1,8 @@
-package com.isnsest.denizenutilities.nms.v26_1;
+package com.isnsest.denizenutilities.nms.v26_2;
 
 import com.isnsest.denizenutilities.nms.NMSHandler;
 import com.isnsest.denizenutilities.nms.v1_21.helpers.BiomeHelperImpl;
-import com.isnsest.denizenutilities.nms.v26_1.helpers.FixedEntityHelperImpl;
+import com.isnsest.denizenutilities.nms.v26_2.helpers.FixedEntityHelperImpl;
 
 public class Handler extends NMSHandler {
 
