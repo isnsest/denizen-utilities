@@ -56,7 +56,7 @@ public class PlayerConnectionConfigureEvent extends ScriptEvent implements Liste
 
     @Override
     public void init() {
-        Bukkit.getPluginManager().registerEvents(this, DenizenUtilities.instance);
+        Bukkit.getPluginManager().registerEvents(this, DenizenUtilities.getInstance());
     }
 
     @Override

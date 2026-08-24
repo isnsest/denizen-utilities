@@ -20,9 +20,13 @@ import com.isnsest.denizenutilities.extensions.properties.PlayerExtensions;
 
 public class DenizenUtilities extends JavaPlugin {
 
-    public static DenizenUtilities instance;
+    private static DenizenUtilities instance;
 
-    Metrics metrics = new Metrics(this, 29915);
+    public static DenizenUtilities getInstance() {
+        return instance;
+    }
+
+    Metrics metrics;
 
     private void register() {
         PlayerExtensions.register();
@@ -48,6 +52,7 @@ public class DenizenUtilities extends JavaPlugin {
     }
 
     private void registerMetrics() {
+        metrics = new Metrics(this, 29915);
         metrics.addCustomChart(new Metrics.SimplePie("Denizen", () -> {
             var plugin = Bukkit.getPluginManager().getPlugin("Denizen");
             return plugin != null ? plugin.getPluginMeta().getVersion() : null;

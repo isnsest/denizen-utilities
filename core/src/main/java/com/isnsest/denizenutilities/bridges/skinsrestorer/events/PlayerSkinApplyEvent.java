@@ -64,7 +64,7 @@ public class PlayerSkinApplyEvent extends ScriptEvent implements Listener {
 
         SkinsRestorerModule.getAPI()
                 .getEventBus()
-                .subscribe(DenizenUtilities.instance, SkinApplyEvent.class, event -> {
+                .subscribe(DenizenUtilities.getInstance(), SkinApplyEvent.class, event -> {
                     instance.event = event;
                     instance.fire();
                 });

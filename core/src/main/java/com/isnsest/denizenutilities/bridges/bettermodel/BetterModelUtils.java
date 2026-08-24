@@ -83,7 +83,7 @@ public class BetterModelUtils {
                 changeSkinWithProfile(tracker, future.join(), bone);
             } else {
                 future.thenAccept(skin -> {
-                    Bukkit.getScheduler().runTask(DenizenUtilities.instance, () -> changeSkinWithProfile(tracker, skin, bone));
+                    Bukkit.getScheduler().runTask(DenizenUtilities.getInstance(), () -> changeSkinWithProfile(tracker, skin, bone));
                 });
             }
         }

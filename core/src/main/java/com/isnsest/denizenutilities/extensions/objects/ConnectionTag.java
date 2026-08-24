@@ -35,9 +35,9 @@ public class ConnectionTag implements ObjectTag, Adjustable {
     public ConnectionTag(PlayerCommonConnection connection) {
         this.connection = connection;
 
-        if (connection instanceof io.papermc.paper.connection.PlayerGameConnection gameConn) {
+        if (connection instanceof PlayerGameConnection gameConn) {
             this.uuid = gameConn.getPlayer().getUniqueId();
-        } else if (connection instanceof io.papermc.paper.connection.PlayerConfigurationConnection configConn) {
+        } else if (connection instanceof PlayerConfigurationConnection configConn) {
             this.uuid = configConn.getProfile().getId();
         }
     }
@@ -236,7 +236,7 @@ public class ConnectionTag implements ObjectTag, Adjustable {
         // - adjust <connection> transfer:play.example.com
         // - adjust <connection> transfer:play.example.com:25570
         // -->
-        tagProcessor.registerMechanism("transfer", false, ElementTag.class, (object, mechanism, input) -> {
+        tagProcessor.registerMechanism("transfer", false, ElementTag.class, (object, _, input) -> {
             HostAndPort target = HostAndPort
                     .fromString(input.asString().trim())
                     .withDefaultPort(25565);

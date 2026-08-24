@@ -66,8 +66,8 @@ public class BetterModelModule implements BridgeModule {
 
     private static class SkinsRestorerHook {
         public static void init() {
-            SkinsRestorerProvider.get().getEventBus().subscribe(DenizenUtilities.instance, SkinApplyEvent.class, event -> {
-                Bukkit.getScheduler().runTaskLater(DenizenUtilities.instance, () -> {
+            SkinsRestorerProvider.get().getEventBus().subscribe(DenizenUtilities.getInstance(), SkinApplyEvent.class, event -> {
+                Bukkit.getScheduler().runTaskLater(DenizenUtilities.getInstance(), () -> {
                     var player = event.getPlayer(Player.class);
                     BetterModel.platform().skinManager().complete(ModelProfile.of(BukkitAdapter.adapt(player)).asUncompleted());
                 }, 2L);
