@@ -11,6 +11,8 @@ dependencies {
     compileOnly("com.discordsrv:discordsrv:1.28.0")
     compileOnly("com.viaversion:viaversion-api:5.11.0")
 
+    implementation("com.github.retrooper:packetevents-spigot:2.13.0")
+
     compileOnly(fileTree(projectDir.resolve("libs")) { include("*.jar") })
     paperweight.paperDevBundle("26.1.2.build.+")
 }

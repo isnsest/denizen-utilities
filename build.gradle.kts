@@ -1,6 +1,6 @@
 plugins {
     java
-    id("io.github.goooler.shadow") version "8.1.8"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 val pluginVersion = "2.9.0"
@@ -8,6 +8,8 @@ val pluginVersion = "2.9.0"
 allprojects {
     group = "com.isnsest"
     version = pluginVersion
+
+    apply(plugin = "java-library")
 
     repositories {
         mavenLocal()
@@ -17,11 +19,11 @@ allprojects {
         maven("https://repo.codemc.org/repository/maven-public/")
         maven("https://nexus.scarsz.me/content/groups/public/")
         maven("https://repo.viaversion.com")
+        maven("https://repo.codemc.io/repository/maven-releases/")
     }
 }
 
 subprojects {
-    apply(plugin = "java-library")
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(25))
@@ -50,4 +52,5 @@ tasks.shadowJar {
     subprojects.forEach { subproject ->
         from(subproject.extensions.getByType<JavaPluginExtension>().sourceSets.getByName("main").output)
     }
+    configurations = subprojects.map { it.configurations.getByName("runtimeClasspath") }
 }

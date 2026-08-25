@@ -13,6 +13,7 @@ import com.google.common.net.HostAndPort;
 import com.isnsest.denizenutilities.Compatibility;
 import com.isnsest.denizenutilities.extensions.containers.DialogScriptContainer;
 import com.isnsest.denizenutilities.extensions.events.PlayerConnectionConfigureEvent;
+import com.isnsest.denizenutilities.packetevents.PacketVersionHelper;
 import io.papermc.paper.connection.PlayerCommonConnection;
 import io.papermc.paper.connection.PlayerConfigurationConnection;
 import io.papermc.paper.connection.PlayerGameConnection;
@@ -147,6 +148,21 @@ public class ConnectionTag implements ObjectTag, Adjustable {
             }
             return null;
         });
+
+        // <--[tag]
+        // @attribute <ConnectionTag.version>
+        // @returns ElementTag
+        // @plugin denizen-utilities
+        // @description
+        // Returns the client release version name (such as "1.21.1" or "26.2") associated with this connection.
+        // Append '.protocol' (as in <ConnectionTag.version.protocol>) to return the numeric protocol version ID instead (e.g. 767).
+        // @example
+        // # Checks client version during the connection configuration stage
+        // - if <context.connection.version.protocol> < 767:
+        //     - adjust <context.connection> "disconnect:Please update your client to 1.21.1+!"
+        // -->
+        tagProcessor.registerTag(ElementTag.class, "version", (attribute, object) ->
+                PacketVersionHelper.format(attribute, PacketVersionHelper.getByUUID(object.getUUID())));
 
         // <--[mechanism]
         // @object ConnectionTag

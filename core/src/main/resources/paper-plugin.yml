@@ -31,3 +31,28 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
+
+    ViaBackwards:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ViaRewind:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ProtocolLib:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    ProtocolSupport:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+    Geyser-Spigot:
+      load: BEFORE
+      required: false
+      join-classpath: true

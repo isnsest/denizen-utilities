@@ -10,6 +10,8 @@ import com.isnsest.denizenutilities.extensions.events.PlayerConnectionConfigureE
 import com.isnsest.denizenutilities.extensions.events.PlayerCustomClickScriptEvent;
 import com.isnsest.denizenutilities.extensions.events.ResourcePackStatusConfigureEvent;
 import com.isnsest.denizenutilities.extensions.objects.ConnectionTag;
+import com.isnsest.denizenutilities.extensions.properties.UtilExtensions;
+import com.isnsest.denizenutilities.packetevents.PacketEventsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.isnsest.denizenutilities.nms.NMSHandler;
@@ -31,6 +33,7 @@ public class DenizenUtilities extends JavaPlugin {
     private void register() {
         PlayerExtensions.register();
         BiomeExtensions.register();
+        UtilExtensions.register();
 
         ScriptRegistry._registerType("dialog", DialogScriptContainer.class);
 
@@ -65,6 +68,11 @@ public class DenizenUtilities extends JavaPlugin {
     }
 
     @Override
+    public void onLoad() {
+        PacketEventsManager.load(this);
+    }
+
+    @Override
     public void onEnable() {
         instance = this;
 
@@ -73,18 +81,25 @@ public class DenizenUtilities extends JavaPlugin {
 
         Compatibility.init();
 
+        register();
+        registerMetrics();
+
+        PacketEventsManager.init();
+
         if (NMSHandler.initialize()) {
             if (getConfig().getBoolean("fixes.fakeinternaldata", false)) {
                 NMSHandler.instance.patchEntityHelper();
             }
         }
 
-        register();
-        registerMetrics();
-
         int loadedBridges = BridgeLoader.loadAll();
 
         Debug.log("denizen-utilities", "Loaded successfully! <A>" + loadedBridges
                 + "<W> plugin bridge(s) loaded (of <A>" + BridgeLoader.getTotalAvailable() + "<W> available)");
+    }
+
+    @Override
+    public void onDisable() {
+        PacketEventsManager.terminate();
     }
 }
