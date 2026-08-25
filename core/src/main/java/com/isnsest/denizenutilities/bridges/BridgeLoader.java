@@ -4,7 +4,6 @@ import com.denizenscript.denizencore.utilities.debugging.Debug;
 import com.isnsest.denizenutilities.bridges.bettermodel.BetterModelModule;
 import com.isnsest.denizenutilities.bridges.discordsrv.DiscordSRVModule;
 import com.isnsest.denizenutilities.bridges.skinsrestorer.SkinsRestorerModule;
-import com.isnsest.denizenutilities.bridges.viaversion.ViaVersionModule;
 import org.bukkit.Bukkit;
 
 import java.util.List;
@@ -14,8 +13,7 @@ public class BridgeLoader {
     private static final List<Class<? extends BridgeModule>> MODULES = List.of(
             SkinsRestorerModule.class,
             BetterModelModule.class,
-            DiscordSRVModule.class,
-            ViaVersionModule.class
+            DiscordSRVModule.class
     );
 
     public static int loadAll() {
