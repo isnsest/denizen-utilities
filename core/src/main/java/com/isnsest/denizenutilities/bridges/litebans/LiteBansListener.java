@@ -38,6 +38,6 @@ public class LiteBansListener extends Events.Listener {
     }
 
     private void runSync(Runnable task) {
-        Bukkit.getScheduler().runTask(DenizenUtilities.instance, task);
+        Bukkit.getScheduler().runTask(DenizenUtilities.getInstance(), task);
     }
 }
