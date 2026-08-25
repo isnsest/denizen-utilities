@@ -237,6 +237,7 @@
         <a class="nav-item" data-tab="tab-biome">BiomeTag</a>
         <a class="nav-item" data-tab="tab-connection">ConnectionTag</a>
         <a class="nav-item" data-tab="tab-player">PlayerTag</a>
+        <a class="nav-item" data-tab="tab-util">UtilTag</a>
     </div>
 
     <div class="nav-group">
@@ -334,20 +335,6 @@
             </button>
             <div class="sub-folder-content" id="sub-dsrv-ext">
                 <a class="nav-item" data-tab="tab-dsrv-ext-player">PlayerTag</a>
-            </div>
-        </div>
-
-        <!-- ViaVersion -->
-        <button class="folder-btn" onclick="toggleFolder('folder-via', this)">
-            <span style="display:flex;align-items:center;gap:8px"><i class="fas fa-network-wired" style="color:#34d399;font-size:0.9rem"></i> ViaVersion</span>
-            <i class="fas fa-chevron-right chevron" id="icon-folder-via"></i>
-        </button>
-        <div class="folder-content" id="folder-via">
-            <button class="sub-folder-btn" onclick="toggleSubFolder('sub-via-ext', this)">
-                Extensions <i class="fas fa-chevron-right chevron" id="icon-sub-via-ext"></i>
-            </button>
-            <div class="sub-folder-content" id="sub-via-ext">
-                <a class="nav-item" data-tab="tab-via-ext-connection">ConnectionTag</a>
             </div>
         </div>
     </div>
@@ -815,12 +802,12 @@
                     <div class="spec-val">Returns the player profile's name associated with this connection.</div>
                 </div>
                 <div class="spec-row">
-                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.viaversion_protocol&gt;</span><span class="badge b-tag">ElementTag(Number)</span></div>
-                    <div class="spec-val">Returns the raw protocol version number of the player's client via ViaVersion (e.g., 765).</div>
-                </div>
-                <div class="spec-row">
-                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.viaversion_version&gt;</span><span class="badge b-tag">ElementTag</span></div>
-                    <div class="spec-val">Returns the human-readable Minecraft client version name via ViaVersion (e.g., "1.20.4", "1.16.5").</div>
+                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.version&gt;</span><span class="badge b-tag">ElementTag</span></div>
+                    <div class="spec-val">
+                        Returns the client release version name (such as "1.21.1" or "26.2") associated with this connection.<br>
+                        Append <code>.protocol</code> (as in <code>&lt;ConnectionTag.version.protocol&gt;</code>) to return the numeric protocol version ID instead (e.g. <code>767</code>).<br>
+                        Works seamlessly during both the configuration stage (before player spawn) and normal gameplay.
+                    </div>
                 </div>
             </div>
 
@@ -862,7 +849,14 @@
             <div class="spec-container">
                 <div class="spec-row">
                     <div class="spec-key"><span class="name-label">&lt;PlayerTag.connection&gt;</span><span class="badge b-tag">ConnectionTag</span></div>
-                    <div class="spec-val">Returns the active <code>ConnectionTag</code> associated with this online player. Allows accessing network connection mechanisms and tags (such as ViaVersion protocol/version or native server transfer) directly from a PlayerTag. Example: <code>&lt;player.connection.viaversion_version&gt;</code>.</div>
+                    <div class="spec-val">Returns the active <code>ConnectionTag</code> associated with this online player. Allows accessing network connection mechanisms and tags directly from a PlayerTag. Example: <code>&lt;player.connection.version&gt;</code>.</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">&lt;PlayerTag.version&gt;</span><span class="badge b-tag">ElementTag</span></div>
+                    <div class="spec-val">
+                        Returns the client release version name (such as "1.21.1" or "26.2") of this online player.<br>
+                        Append <code>.protocol</code> (as in <code>&lt;PlayerTag.version.protocol&gt;</code>) to return the numeric protocol version ID instead (e.g. <code>767</code>).
+                    </div>
                 </div>
             </div>
 
@@ -879,6 +873,43 @@
             </div>
         </div>
 
+        <!-- ===== UTILTAG ===== -->
+        <div id="tab-util" class="tab-panel">
+            <div class="breadcrumb">Objects <i class="fas fa-chevron-right"></i> <span>UtilTag</span></div>
+            <h1>UtilTag</h1>
+            <p class="subtitle">Utility tags and extensions provided by Denizen Utilities.</p>
+
+            <h2>Tags</h2>
+            <div class="spec-container">
+                <div class="spec-row">
+                    <div class="spec-key">
+                        <span class="name-label">&lt;util.client_version_by_address[&lt;address&gt;]&gt;</span>
+                        <span class="badge b-tag">ElementTag</span>
+                    </div>
+                    <div class="spec-val">
+                        Returns the raw client release version name (such as <code>"1.21.1"</code> or <code>"26.2"</code>) for the specified IP address.<br>
+                        Append <code>.protocol</code> to return the numeric protocol version ID instead (e.g. <code>767</code>).
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Server List Ping & ViaVersion Bypass:</strong><br>
+                This tag is specifically designed for the <code>on server list ping</code> event.<br><br>
+                When using ViaVersion, incoming handshake packets are rewritten to match the server core's version so the server accepts the ping. Because of this, Paper's <code>&lt;context.client_protocol_version&gt;</code> falsely reports the server core's version when a client connects with a newer version.<br><br>
+                <strong>Example:</strong> On a <code>1.21.11</code> server with a <code>26.2</code> client, Paper reports <code>1.21.11</code>. This tag resolves the genuine connection data directly, returning the true client version (<code>26.2</code> / <code>776</code>).
+            </div>
+
+            <div class="code-block">
+                <div class="code-header"><span class="code-title">Example</span><button class="btn-copy">Copy YAML</button></div>
+                <pre><span class="s-k">server_ping_script:</span>
+  <span class="s-k">type:</span> <span class="s-v">world</span>
+  <span class="s-k">events:</span>
+    <span class="s-k">on</span> <span class="s-v">server list ping:</span>
+      <span class="s-k">-</span> <span class="s-s">narrate "Paper: &lt;context.client_protocol_version&gt;"</span>
+      <span class="s-k">-</span> <span class="s-s">narrate "Actual: &lt;util.client_version_by_address[&lt;context.address&gt;].protocol&gt;"</span></pre>
+            </div>
+        </div>
 
         <!-- ===== BETTERMODEL TABS ===== -->
 
@@ -890,8 +921,8 @@
 
             <div class="info-box" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.25); color: #fde68a;">
                 <strong>Pre-configuration Sub-block Support:</strong><br>
-                The <code>bmmodel</code> command now supports passing a YAML sub-content block directly under the command to pre-configure mechanisms on model creation.<br>
-                <em>Note: Some mechanisms normally take effect only after animation playback, so using this pre-configuration feature is strongly recommended.</em>
+                The <code>bmmodel</code> command supports passing a YAML sub-content block directly under the command to pre-configure mechanisms on model creation.<br>
+                <em>Note: Some mechanisms take effect only after animation playback, so using this pre-configuration feature is strongly recommended.</em>
             </div>
 
             <div class="spec-container">
@@ -901,11 +932,10 @@
             </div>
 
             <div class="code-block">
-                <div class="code-header"><span class="code-title">Usage & Pre-configuration Example</span></div>
+                <div class="code-header"><span class="code-title">Example</span></div>
                 <pre><span class="s-k">-</span> <span class="s-v">bmmodel</span> <span class="s-s">entity:&lt;context.entity&gt; model:dragon</span>
 <span class="s-k">-</span> <span class="s-v">bmmodel</span> <span class="s-s">entity:&lt;context.entity&gt; model:dragon remove</span>
 
-<span class="s-c"># Pre-configuring model mechanisms on creation:</span>
 <span class="s-k">-</span> <span class="s-v">bmmodel</span> <span class="s-s">entity:&lt;player&gt; model:dragon:</span>
     <span class="s-k">glow:</span> <span class="s-v">true</span>
     <span class="s-k">glow_color:</span> <span class="s-v">red</span>
@@ -928,7 +958,7 @@
             </div>
 
             <div class="code-block">
-                <div class="code-header"><span class="code-title">Usage</span></div>
+                <div class="code-header"><span class="code-title">Example</span></div>
                 <pre><span class="s-k">-</span> <span class="s-v">bmlimb</span> <span class="s-s">target:&lt;player&gt; model:player_arm animation:wave loop:PLAY_ONCE</span></pre>
             </div>
         </div>
@@ -950,7 +980,7 @@
             </div>
 
             <div class="code-block">
-                <div class="code-header"><span class="code-title">Usage</span></div>
+                <div class="code-header"><span class="code-title">Example</span></div>
                 <pre><span class="s-k">-</span> <span class="s-v">bmstate</span> <span class="s-s">model:&lt;[my_model]&gt; state:walk loop:LOOP speed:1.2</span>
 <span class="s-k">-</span> <span class="s-v">bmstate</span> <span class="s-s">model:&lt;[my_model]&gt; state:nod bones:head|waist loop:PLAY_ONCE</span>
 <span class="s-k">-</span> <span class="s-v">bmstate</span> <span class="s-s">model:&lt;[my_model]&gt; state:walk remove</span></pre>
@@ -981,7 +1011,7 @@
             </div>
 
             <div class="code-block">
-                <div class="code-header"><span class="code-title">Usage</span></div>
+                <div class="code-header"><span class="code-title">Example</span></div>
                 <pre><span class="s-k">-</span> <span class="s-v">bmpart</span> <span class="s-s">entity:&lt;[some_npc]&gt; model:statue bone:head part:HEAD from:&lt;player&gt;</span>
 <span class="s-k">-</span> <span class="s-v">bmpart</span> <span class="s-s">entity:&lt;[some_npc]&gt; model:chest_model bone:chest part:TORSO from:&lt;player[PlayerName]&gt;</span></pre>
             </div>
@@ -1033,7 +1063,7 @@
                 </div>
                 <div class="spec-row">
                     <div class="spec-key"><span class="name-label">&lt;context.[key]&gt;</span><span class="badge b-tag">ElementTag</span></div>
-                    <div class="spec-val">Returns custom parameter values defined inside the braces <code>{}</code> of the script line. (e.g. <code>&lt;context.damage&gt;</code> for the argument <code>denizen:strike{damage=5}</code>).</div>
+                    <div class="spec-val">Returns custom parameter values defined inside the braces <code>{}</code> of the script line.</div>
                 </div>
             </div>
 
@@ -1041,7 +1071,7 @@
             <p>Enter keyframes with: <code>denizen:signal_name{arg1=val1;arg2=val2}</code> on your animation instructions track.</p>
 
             <div class="code-block">
-                <div class="code-header"><span class="code-title">Example usage</span></div>
+                <div class="code-header"><span class="code-title">Example</span></div>
                 <pre><span class="s-k">on</span> <span class="s-s">bm animation signal name:strike:</span>
   <span class="s-k">-</span> <span class="s-s">narrate "Active model &lt;context.model.name&gt; applied &lt;context.damage&gt; points!"</span></pre>
             </div>
@@ -1104,13 +1134,13 @@
             <p>The standard player context <code>&lt;player&gt;</code> represents the online player who performed the interaction.</p>
 
             <div class="code-block">
-                <div class="code-header"><span class="code-title">Example usage</span></div>
+                <div class="code-header"><span class="code-title">Example</span></div>
                 <pre><span class="s-k">on</span> <span class="s-s">bm player model interact name:dragon:</span>
   <span class="s-k">-</span> <span class="s-s">narrate "You interacted with the dragon model using your &lt;context.hand&gt;!"</span></pre>
             </div>
         </div>
 
-        <!-- ===== BETTERMODEL OBJECTS (BMActiveModelTag -> Structured in 2 Blocks) ===== -->
+        <!-- ===== BETTERMODEL OBJECTS ===== -->
         <div id="tab-bm-obj-model" class="tab-panel">
             <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> BetterModel <i class="fas fa-chevron-right"></i> Objects <i class="fas fa-chevron-right"></i> <span>BMActiveModelTag</span></div>
             <h1>BMActiveModelTag</h1>
@@ -1159,7 +1189,6 @@
 
             <h2>Mechanisms</h2>
 
-            <!-- BLOCK 1: Global / Model-Level Operations -->
             <div class="info-box">
                 <strong>Block 1: Global / Model-Level Mechanisms</strong><br>
                 These mechanisms operate natively on the model tracker as a single unified structure. They rotate, scale, or modify the entire model as a whole.
@@ -1181,10 +1210,9 @@
                 <div class="spec-row"><div class="spec-key"><span class="name-label">force_update</span><span class="badge b-mech">None</span></div><div class="spec-val">Manually forces a full synchronization update (bones, metadata, and hitboxes).</div></div>
             </div>
 
-            <!-- BLOCK 2: Bulk Per-Bone Convenience Mechanisms -->
             <div class="info-box" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.25); color: #a7f3d0;">
                 <strong>Block 2: Bulk Per-Bone Convenience Mechanisms</strong><br>
-                These mechanisms are provided for convenience. Under the hood, they iterate over <em>every individual bone</em> in the model and apply a flat parameter override to each bone (equivalent to executing a Denizen <code>foreach</code> loop over <code>BMBoneTag</code>s).
+                These mechanisms are provided for convenience. Under the hood, they iterate over <em>every individual bone</em> in the model and apply a flat parameter override to each bone.
             </div>
 
             <div class="spec-container">
@@ -1318,7 +1346,7 @@
             </div>
 
             <div class="code-block">
-                <div class="code-header"><span class="code-title">Usage</span></div>
+                <div class="code-header"><span class="code-title">Example</span></div>
                 <pre><span class="s-k">-</span> <span class="s-v">skin</span> <span class="s-s">Notch</span>
 <span class="s-k">-</span> <span class="s-v">skin</span> <span class="s-s">https://minesk.in/7db... &lt;[some_player]&gt;</span>
 <span class="s-k">-</span> <span class="s-v">skin</span> <span class="s-s">&lt;player.skin_blob&gt; &lt;server.online_players&gt;</span></pre>
@@ -1387,26 +1415,6 @@
 
             <div class="spec-container">
                 <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;PlayerTag.discord_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the Discord snowflake ID associated with the Minecraft player's account via DiscordSRV. Returns <code>null</code> if the player has not linked their Discord account.</div></div>
-            </div>
-        </div>
-
-
-        <!-- ===== VIAVERSION TABS ===== -->
-
-        <div id="tab-via-ext-connection" class="tab-panel">
-            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> ViaVersion <i class="fas fa-chevron-right"></i> Extensions <i class="fas fa-chevron-right"></i> <span>ConnectionTag</span></div>
-            <h1>ConnectionTag (Extensions)</h1>
-            <p class="subtitle">Tags injected into ConnectionTag objects by the ViaVersion bridge.</p>
-
-            <div class="spec-container">
-                <div class="spec-row">
-                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.viaversion_protocol&gt;</span><span class="badge b-tag">ElementTag(Number)</span></div>
-                    <div class="spec-val">Returns the raw protocol version number of the player's client via ViaVersion (e.g., 765).</div>
-                </div>
-                <div class="spec-row">
-                    <div class="spec-key"><span class="name-label">&lt;ConnectionTag.viaversion_version&gt;</span><span class="badge b-tag">ElementTag</span></div>
-                    <div class="spec-val">Returns the human-readable Minecraft client version name via ViaVersion (e.g., "1.20.4", "1.16.5").</div>
-                </div>
             </div>
         </div>
 
