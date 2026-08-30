@@ -10,6 +10,7 @@ dependencies {
     compileOnly("io.github.toxicity188:bettermodel-bukkit-api:3.0.1")
     compileOnly("com.discordsrv:discordsrv:1.28.0")
     compileOnly("com.viaversion:viaversion-api:5.11.0")
+    compileOnly("com.gitlab.ruany:LiteBansAPI:0.6.1")
 
     implementation("com.github.retrooper:packetevents-spigot:2.13.0")
 

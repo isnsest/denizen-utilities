@@ -20,6 +20,7 @@ allprojects {
         maven("https://nexus.scarsz.me/content/groups/public/")
         maven("https://repo.viaversion.com")
         maven("https://repo.codemc.io/repository/maven-releases/")
+        maven("https://jitpack.io")
     }
 }
 
