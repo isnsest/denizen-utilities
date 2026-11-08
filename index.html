@@ -199,7 +199,8 @@
 
     <div class="nav-group">
         <div class="nav-label">General</div>
-        <a class="nav-item active" data-tab="tab-config">Configuration</a>
+        <a class="nav-item active" data-tab="tab-overview">Overview</a>
+        <a class="nav-item" data-tab="tab-config">Configuration</a>
     </div>
 
     <div class="nav-group">
@@ -230,6 +231,7 @@
         <div class="nav-label">Events</div>
         <a class="nav-item" data-tab="tab-event-connection">Player Connect Configure</a>
         <a class="nav-item" data-tab="tab-event-click">Player Custom Click</a>
+        <a class="nav-item" data-tab="tab-event-resourcepack">Connection Resource Pack Status</a>
     </div>
 
     <div class="nav-group">
@@ -337,14 +339,70 @@
                 <a class="nav-item" data-tab="tab-dsrv-ext-player">PlayerTag</a>
             </div>
         </div>
+
+        <!-- LiteBans -->
+        <button class="folder-btn" onclick="toggleFolder('folder-lb', this)">
+            <span style="display:flex;align-items:center;gap:8px"><i class="fas fa-gavel" style="color:#f87171;font-size:0.9rem"></i> LiteBans</span>
+            <i class="fas fa-chevron-right chevron" id="icon-folder-lb"></i>
+        </button>
+        <div class="folder-content" id="folder-lb">
+            <button class="sub-folder-btn" onclick="toggleSubFolder('sub-lb-evt', this)">
+                Events <i class="fas fa-chevron-right chevron" id="icon-sub-lb-evt"></i>
+            </button>
+            <div class="sub-folder-content" id="sub-lb-evt">
+                <a class="nav-item" data-tab="tab-lb-evt-ban">bans player</a>
+                <a class="nav-item" data-tab="tab-lb-evt-unban">unbans player</a>
+                <a class="nav-item" data-tab="tab-lb-evt-mute">mutes player</a>
+                <a class="nav-item" data-tab="tab-lb-evt-unmute">unmutes player</a>
+                <a class="nav-item" data-tab="tab-lb-evt-kick">kicks player</a>
+                <a class="nav-item" data-tab="tab-lb-evt-warn">warns player</a>
+                <a class="nav-item" data-tab="tab-lb-evt-broadcast">sends broadcast</a>
+            </div>
+        </div>
     </div>
 </aside>
 
 <main>
     <div class="container">
 
+        <!-- ===== OVERVIEW ===== -->
+        <div id="tab-overview" class="tab-panel active">
+            <div class="breadcrumb">General <i class="fas fa-chevron-right"></i> <span>Overview</span></div>
+            <h1>Denizen Utilities</h1>
+            <p class="subtitle">Addon for Denizen on Paper 1.21+: native dialogs, connection (configuration phase) control, client version tags and bridges to other plugins.</p>
+
+            <h2>Requirements</h2>
+            <div class="spec-container">
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">Denizen</span><span class="badge b-req">Required</span></div>
+                    <div class="spec-val">Must be installed; denizen-utilities loads after it.</div>
+                </div>
+            </div>
+
+            <h2>Plugin Bridges</h2>
+            <p>A bridge is loaded automatically when its plugin is enabled on the server. Without the plugin, the bridge's commands, events and tags are not registered.</p>
+            <div class="spec-container">
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">BetterModel</span><span class="badge b-opt">Optional</span></div>
+                    <div class="spec-val">Commands <code>bmmodel</code>, <code>bmlimb</code>, <code>bmstate</code>, <code>bmpart</code>; animation signal events; <code>BMActiveModelTag</code>, <code>BMModelTag</code>, <code>BMBoneTag</code>.</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">SkinsRestorer</span><span class="badge b-opt">Optional</span></div>
+                    <div class="spec-val">Command <code>skin</code>, event <code>player skin apply</code>, skin tags for <code>PlayerTag</code>.</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">DiscordSRV</span><span class="badge b-opt">Optional</span></div>
+                    <div class="spec-val">Account link/unlink events and <code>PlayerTag.discord_id</code>.</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">LiteBans</span><span class="badge b-opt">Optional</span></div>
+                    <div class="spec-val">Events for bans, unbans, mutes, unmutes, kicks, warnings and LiteBans broadcasts.</div>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== CONFIGURATION ===== -->
-        <div id="tab-config" class="tab-panel active">
+        <div id="tab-config" class="tab-panel">
             <div class="breadcrumb">General <i class="fas fa-chevron-right"></i> <span>Configuration</span></div>
             <h1>Plugin Configuration</h1>
             <p class="subtitle">Global settings and fixes available in the plugin's <code>config.yml</code> file.</p>
@@ -358,7 +416,7 @@
                     </div>
                     <div class="spec-val">
                         Enables a patch for Denizen's <code>fakeinternaldata</code> command on Minecraft 1.21 and higher.
-                        This patch is provided because the Denizen developers still haven't fixed this command on newer game versions. Default is <code>true</code>.
+                        This patch is provided because the Denizen developers still haven't fixed this command on newer game versions. Default is <code>false</code>.
                     </div>
                 </div>
             </div>
@@ -366,7 +424,7 @@
             <div class="code-block">
                 <div class="code-header"><span class="code-title">config.yml</span></div>
                 <pre><span class="s-k">fixes:</span>
-  <span class="s-k">fakeinternaldata:</span> <span class="s-v">true</span></pre>
+  <span class="s-k">fakeinternaldata:</span> <span class="s-v">false</span></pre>
             </div>
         </div>
 
@@ -559,6 +617,10 @@
                     <div class="spec-key"><span class="name-label">condition</span><span class="badge b-opt">Optional</span></div>
                     <div class="spec-val">A boolean tag. If it evaluates to <code>false</code>, the input field will not be shown.</div>
                 </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">key</span><span class="badge b-opt">Optional</span></div>
+                    <div class="spec-val">Name under which the value is available as <code>&lt;context.key&gt;</code> and inside <code>&lt;context.inputs&gt;</code>. Defaults to the input's ID (its key in the <code>inputs:</code> map).</div>
+                </div>
             </div>
 
             <h3>Text Input (type: text)</h3>
@@ -746,6 +808,19 @@
                 <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.inputs&gt;</span><span class="badge b-tag">MapTag</span></div><div class="spec-val">Returns a MapTag of all inputs and their current values.</div></div>
                 <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.[input_key]&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the specific value of a dialog input directly by its key.</div></div>
                 <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.reflect_event&gt;</span><span class="badge b-tag">JavaReflectedObjectTag</span></div><div class="spec-val">Returns the underlying <code>PlayerCustomClickEvent</code>.</div></div>
+            </div>
+        </div>
+
+        <div id="tab-event-resourcepack" class="tab-panel">
+            <div class="breadcrumb">Events <i class="fas fa-chevron-right"></i> <span>Connection Resource Pack Status</span></div>
+            <h1>connection resource pack status</h1>
+            <div class="signature"><span class="sig-return">on</span> connection resource pack status:</div>
+            <p class="subtitle">Triggers when a resource pack download finishes (successfully or not) during the configuration phase.</p>
+
+            <h2>Contexts</h2>
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.connection&gt;</span><span class="badge b-tag">ConnectionTag</span></div><div class="spec-val">Returns the <code>ConnectionTag</code> of the connecting player.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.status&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the result of the resource pack loading: <code>SUCCESS</code> or <code>FAILED</code>.</div></div>
             </div>
         </div>
 
@@ -1304,6 +1379,10 @@
                     <div class="spec-key"><span class="name-label">&lt;PlayerTag.limb&gt;</span><span class="badge b-tag">BMActiveModelTag</span></div>
                     <div class="spec-val">Returns the player's active player-renderer limb tracker.</div>
                 </div>
+                <div class="spec-row">
+                    <div class="spec-key"><span class="name-label">&lt;PlayerTag.bm_part[&lt;part_name&gt;]&gt;</span><span class="badge b-tag">ItemTag</span></div>
+                    <div class="spec-val">Returns the current item used for the specified BetterModel skin part of the player (e.g. <code>HEAD</code>, <code>TORSO</code>). Returns <code>null</code> if the part does not exist or has no active transformed item.</div>
+                </div>
             </div>
         </div>
 
@@ -1362,6 +1441,7 @@
             <h3>Contexts</h3>
             <div class="spec-container">
                 <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.value&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">The Base64 texture value of the skin being applied.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.signature&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">The signature of the skin being applied.</div></div>
             </div>
 
             <h3>Determinations</h3>
@@ -1415,6 +1495,216 @@
 
             <div class="spec-container">
                 <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;PlayerTag.discord_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the Discord snowflake ID associated with the Minecraft player's account via DiscordSRV. Returns <code>null</code> if the player has not linked their Discord account.</div></div>
+            </div>
+        </div>
+
+
+        <!-- ===== LITEBANS TABS ===== -->
+
+        <div id="tab-lb-evt-ban" class="tab-panel">
+            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> LiteBans <i class="fas fa-chevron-right"></i> Events <i class="fas fa-chevron-right"></i> <span>bans player</span></div>
+            <h1>litebans bans player</h1>
+            <div class="signature"><span class="sig-return">on</span> litebans bans player:</div>
+            <p class="subtitle">Triggers when LiteBans adds a ban entry to the database.</p>
+            <p>The attached player is the affected player (online or offline), when the entry has a UUID.</p>
+
+            <h2>Contexts</h2>
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the database ID of the ban entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.reason&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the ban reason.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the banned player, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.ip&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the IP address affected by the ban, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor&gt;</span><span class="badge b-tag">PlayerTag</span></div><div class="spec-val">Returns the staff PlayerTag who issued the ban, if online.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the staff member who issued the ban.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the name of the staff member who issued the ban.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_scope&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server scope of the ban.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_origin&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server where the ban was created.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration&gt;</span><span class="badge b-tag">DurationTag</span></div><div class="spec-val">Returns the ban length, if temporary.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration_string&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns a human-readable duration string.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.remaining_duration&gt;</span><span class="badge b-tag">DurationTag</span></div><div class="spec-val">Returns the remaining ban time, if temporary.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.remaining_duration_string&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns a human-readable remaining duration string.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.random_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the random ID of the ban entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.template_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the template name used, if any.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_start&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the ban start time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_end&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the ban end time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_permanent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the ban is permanent.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_silent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the ban is issued silently.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_ipban&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the ban affects an IP address.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_active&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the ban entry is active.</div></div>
+            </div>
+        </div>
+
+        <div id="tab-lb-evt-unban" class="tab-panel">
+            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> LiteBans <i class="fas fa-chevron-right"></i> Events <i class="fas fa-chevron-right"></i> <span>unbans player</span></div>
+            <h1>litebans unbans player</h1>
+            <div class="signature"><span class="sig-return">on</span> litebans unbans player:</div>
+            <p class="subtitle">Triggers when LiteBans removes a ban entry from the database.</p>
+            <p>The attached player is the affected player (online or offline), when the entry has a UUID.</p>
+
+            <h2>Contexts</h2>
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the database ID of the ban entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.reason&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the original ban reason.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the unbanned player, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.ip&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the IP address that was affected by the ban, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor&gt;</span><span class="badge b-tag">PlayerTag</span></div><div class="spec-val">Returns the staff PlayerTag who originally issued the ban, if online.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the staff member who originally issued the ban.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the name of the staff member who originally issued the ban.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.removed_by&gt;</span><span class="badge b-tag">PlayerTag</span></div><div class="spec-val">Returns the staff PlayerTag who removed the ban, if online.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.removed_by_uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the staff member who removed the ban.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.removed_by_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the name of the staff member who removed the ban.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.removal_reason&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the reason the ban was removed.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_scope&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server scope of the ban.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_origin&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server where the ban was created.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration&gt;</span><span class="badge b-tag">DurationTag</span></div><div class="spec-val">Returns the original ban length, if temporary.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration_string&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns a human-readable duration string.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.random_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the random ID of the ban entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.template_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the template name used, if any.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_start&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the ban start time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_end&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the ban end time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_permanent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the ban was permanent.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_silent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the ban was issued silently.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_ipban&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the ban affected an IP address.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_active&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the ban entry is active.</div></div>
+            </div>
+        </div>
+
+        <div id="tab-lb-evt-mute" class="tab-panel">
+            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> LiteBans <i class="fas fa-chevron-right"></i> Events <i class="fas fa-chevron-right"></i> <span>mutes player</span></div>
+            <h1>litebans mutes player</h1>
+            <div class="signature"><span class="sig-return">on</span> litebans mutes player:</div>
+            <p class="subtitle">Triggers when LiteBans adds a mute entry to the database.</p>
+            <p>The attached player is the affected player (online or offline), when the entry has a UUID.</p>
+
+            <h2>Contexts</h2>
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the database ID of the mute entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.reason&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the mute reason.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the muted player, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.ip&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the IP address affected by the mute, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor&gt;</span><span class="badge b-tag">PlayerTag</span></div><div class="spec-val">Returns the staff PlayerTag who issued the mute, if online.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the staff member who issued the mute.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the name of the staff member who issued the mute.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_scope&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server scope of the mute.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_origin&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server where the mute was created.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration&gt;</span><span class="badge b-tag">DurationTag</span></div><div class="spec-val">Returns the mute length, if temporary.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration_string&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns a human-readable duration string.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.remaining_duration&gt;</span><span class="badge b-tag">DurationTag</span></div><div class="spec-val">Returns the remaining mute time, if temporary.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.remaining_duration_string&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns a human-readable remaining duration string.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.random_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the random ID of the mute entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.template_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the template name used, if any.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_start&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the mute start time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_end&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the mute end time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_permanent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the mute is permanent.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_silent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the mute is issued silently.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_ipban&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the mute affects an IP address.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_active&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the mute entry is active.</div></div>
+            </div>
+        </div>
+
+        <div id="tab-lb-evt-unmute" class="tab-panel">
+            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> LiteBans <i class="fas fa-chevron-right"></i> Events <i class="fas fa-chevron-right"></i> <span>unmutes player</span></div>
+            <h1>litebans unmutes player</h1>
+            <div class="signature"><span class="sig-return">on</span> litebans unmutes player:</div>
+            <p class="subtitle">Triggers when LiteBans removes a mute entry from the database.</p>
+            <p>The attached player is the affected player (online or offline), when the entry has a UUID.</p>
+
+            <h2>Contexts</h2>
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the database ID of the mute entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.reason&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the original mute reason.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the unmuted player, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.ip&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the IP address that was affected by the mute, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor&gt;</span><span class="badge b-tag">PlayerTag</span></div><div class="spec-val">Returns the staff PlayerTag who originally issued the mute, if online.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the staff member who originally issued the mute.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the name of the staff member who originally issued the mute.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.removed_by&gt;</span><span class="badge b-tag">PlayerTag</span></div><div class="spec-val">Returns the staff PlayerTag who removed the mute, if online.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.removed_by_uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the staff member who removed the mute.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.removed_by_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the name of the staff member who removed the mute.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.removal_reason&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the reason the mute was removed.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_scope&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server scope of the mute.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_origin&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server where the mute was created.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration&gt;</span><span class="badge b-tag">DurationTag</span></div><div class="spec-val">Returns the original mute length, if temporary.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration_string&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns a human-readable duration string.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.random_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the random ID of the mute entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.template_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the template name used, if any.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_start&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the mute start time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_end&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the mute end time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_permanent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the mute was permanent.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_silent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the mute was issued silently.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_ipban&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the mute affected an IP address.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_active&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the mute entry is active.</div></div>
+            </div>
+        </div>
+
+        <div id="tab-lb-evt-kick" class="tab-panel">
+            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> LiteBans <i class="fas fa-chevron-right"></i> Events <i class="fas fa-chevron-right"></i> <span>kicks player</span></div>
+            <h1>litebans kicks player</h1>
+            <div class="signature"><span class="sig-return">on</span> litebans kicks player:</div>
+            <p class="subtitle">Triggers when LiteBans adds a kick entry to the database.</p>
+            <p>The attached player is the affected player (online or offline), when the entry has a UUID.</p>
+
+            <h2>Contexts</h2>
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the database ID of the kick entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.reason&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the kick reason.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the kicked player, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.ip&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the IP address of the kicked player, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor&gt;</span><span class="badge b-tag">PlayerTag</span></div><div class="spec-val">Returns the staff PlayerTag who issued the kick, if online.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the staff member who issued the kick.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the name of the staff member who issued the kick.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_scope&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server scope of the kick.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_origin&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server where the kick was created.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.random_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the random ID of the kick entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.template_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the template name used, if any.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_start&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the kick time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_silent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the kick was issued silently.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_active&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the kick entry is active.</div></div>
+            </div>
+        </div>
+
+        <div id="tab-lb-evt-warn" class="tab-panel">
+            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> LiteBans <i class="fas fa-chevron-right"></i> Events <i class="fas fa-chevron-right"></i> <span>warns player</span></div>
+            <h1>litebans warns player</h1>
+            <div class="signature"><span class="sig-return">on</span> litebans warns player:</div>
+            <p class="subtitle">Triggers when LiteBans adds a warning entry to the database.</p>
+            <p>The attached player is the affected player (online or offline), when the entry has a UUID.</p>
+
+            <h2>Contexts</h2>
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the database ID of the warning entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.reason&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the warning reason.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the warned player, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.ip&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the IP address of the warned player, if applicable.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor&gt;</span><span class="badge b-tag">PlayerTag</span></div><div class="spec-val">Returns the staff PlayerTag who issued the warning, if online.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_uuid&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the UUID of the staff member who issued the warning.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.executor_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the name of the staff member who issued the warning.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_scope&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server scope of the warning.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.server_origin&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the server where the warning was created.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration&gt;</span><span class="badge b-tag">DurationTag</span></div><div class="spec-val">Returns the warning length, if temporary.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.duration_string&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns a human-readable duration string.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.remaining_duration&gt;</span><span class="badge b-tag">DurationTag</span></div><div class="spec-val">Returns the remaining warning time, if temporary.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.remaining_duration_string&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns a human-readable remaining duration string.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.random_id&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the random ID of the warning entry.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.template_name&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the template name used, if any.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_start&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the warning start time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.date_end&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the warning end time in milliseconds (unix epoch).</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_permanent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the warning is permanent.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_silent&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the warning is issued silently.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.is_active&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns whether the warning entry is active.</div></div>
+            </div>
+        </div>
+
+        <div id="tab-lb-evt-broadcast" class="tab-panel">
+            <div class="breadcrumb">Bridges <i class="fas fa-chevron-right"></i> LiteBans <i class="fas fa-chevron-right"></i> Events <i class="fas fa-chevron-right"></i> <span>sends broadcast</span></div>
+            <h1>litebans sends broadcast</h1>
+            <div class="signature"><span class="sig-return">on</span> litebans sends broadcast:</div>
+            <p class="subtitle">Triggers when LiteBans sends a broadcast or notification message to players with permission to see it.</p>
+
+            <h2>Contexts</h2>
+            <div class="spec-container">
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.message&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the broadcast message.</div></div>
+                <div class="spec-row"><div class="spec-key"><span class="name-label">&lt;context.type&gt;</span><span class="badge b-tag">ElementTag</span></div><div class="spec-val">Returns the broadcast type, if any. When non-null, viewers need the <code>litebans.notify.&lt;type&gt;</code> permission.</div></div>
             </div>
         </div>
 
