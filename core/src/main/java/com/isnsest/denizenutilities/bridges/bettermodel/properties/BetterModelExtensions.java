@@ -1,12 +1,17 @@
 package com.isnsest.denizenutilities.bridges.bettermodel.properties;
 
 import com.denizenscript.denizen.objects.EntityTag;
+import com.denizenscript.denizen.objects.ItemTag;
 import com.denizenscript.denizen.objects.PlayerTag;
+import com.denizenscript.denizencore.objects.core.ElementTag;
 import com.denizenscript.denizencore.objects.core.ListTag;
+import com.isnsest.denizenutilities.bridges.bettermodel.SkinPartsManager;
 import com.isnsest.denizenutilities.bridges.bettermodel.objects.BMActiveModelTag;
 import kr.toxicity.model.api.BetterModel;
+import kr.toxicity.model.api.bukkit.platform.BukkitItemStack;
 import kr.toxicity.model.api.data.renderer.ModelRenderer;
 import kr.toxicity.model.api.tracker.EntityTracker;
+import kr.toxicity.model.api.util.TransformedItemStack;
 
 public class BetterModelExtensions {
 
@@ -59,6 +64,19 @@ public class BetterModelExtensions {
                             .findFirst()
                             .map(BMActiveModelTag::new))
                     .orElse(null);
+        });
+
+        // <--[tag]
+        // @attribute <PlayerTag.bm_part[<part_name>]>
+        // @returns ItemTag
+        // @plugin denizen-utilities, BetterModel
+        // @description
+        // Returns the current item used for the specified BetterModel skin part of the player.
+        // Returns null if the skin part does not exist or has no active transformed item.
+        // -->
+        PlayerTag.tagProcessor.registerTag(ItemTag.class, ElementTag.class, "bm_part", (_, player, name) -> {
+            TransformedItemStack t = SkinPartsManager.skinPartNow(player.getUUID(), name.asString());
+            return t == null ? null : new ItemTag(((BukkitItemStack) t.itemStack()).source());
         });
     }
 }

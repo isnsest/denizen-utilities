@@ -56,6 +56,7 @@ public class BetterModelModule implements BridgeModule {
 
         BMScriptManager.register();
         BetterModelExtensions.register();
+        SkinPartsManager.register(DenizenUtilities.getInstance());
 
         if (Bukkit.getPluginManager().isPluginEnabled("SkinsRestorer")) {
             SkinsRestorerHook.init();
