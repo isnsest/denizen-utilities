@@ -39,7 +39,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static com.isnsest.denizenutilities.extensions.containers.DialogScriptHelper.dialogDataMap;
 import static com.isnsest.denizenutilities.extensions.containers.DialogScriptHelper.mapToConfig;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -495,7 +494,7 @@ public class DialogScriptContainer extends ScriptContainer {
             baseBuilder.afterAction(afterAction);
         }
 
-        dialogDataMap.put(dialogData.connection, dialogData);
+        DialogScriptHelper.put(dialogData.connection, dialogData);
 
         return baseBuilder.build();
     }

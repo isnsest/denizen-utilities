@@ -5,13 +5,45 @@ import com.denizenscript.denizencore.objects.core.MapTag;
 import com.denizenscript.denizencore.utilities.YamlConfiguration;
 import com.denizenscript.denizencore.utilities.text.StringHolder;
 import io.papermc.paper.connection.PlayerCommonConnection;
+import io.papermc.paper.connection.PlayerConfigurationConnection;
+import io.papermc.paper.connection.PlayerGameConnection;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.Listener;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DialogScriptHelper implements Listener {
 
-    public static Map<PlayerCommonConnection, DialogData> dialogDataMap = new WeakHashMap<>();
+    public static final Map<UUID, DialogData> dialogDataMap = new ConcurrentHashMap<>();
+
+    public static UUID keyOf(PlayerCommonConnection connection) {
+        if (connection instanceof PlayerGameConnection game) {
+            return game.getPlayer().getUniqueId();
+        }
+        if (connection instanceof PlayerConfigurationConnection config) {
+            return config.getProfile().getId();
+        }
+        return null;
+    }
+
+    public static void put(PlayerCommonConnection connection, DialogData data) {
+        UUID key = keyOf(connection);
+        if (key != null) {
+            dialogDataMap.put(key, data);
+        }
+    }
+
+    public static DialogData get(PlayerCommonConnection connection) {
+        UUID key = keyOf(connection);
+        return key == null ? null : dialogDataMap.get(key);
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        dialogDataMap.remove(event.getPlayer().getUniqueId());
+    }
 
     public DialogScriptHelper() {
     }

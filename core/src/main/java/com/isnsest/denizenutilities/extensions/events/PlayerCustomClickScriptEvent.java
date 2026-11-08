@@ -23,7 +23,6 @@ import com.denizenscript.denizencore.utilities.YamlConfiguration;
 
 import java.util.List;
 
-import static com.isnsest.denizenutilities.extensions.containers.DialogScriptHelper.dialogDataMap;
 
 @SuppressWarnings("UnstableApiUsage")
 public class PlayerCustomClickScriptEvent extends ScriptEvent implements Listener {
@@ -85,7 +84,7 @@ public class PlayerCustomClickScriptEvent extends ScriptEvent implements Listene
         public void onDialogClick(PlayerCustomClickEvent event) {
             ButtonPathInfo pathInfo = parseButtonKey(event.getIdentifier());
 
-            var dialogData = dialogDataMap.get(event.getCommonConnection());
+            var dialogData = DialogScriptHelper.get(event.getCommonConnection());
 
             instance.event = event;
             instance.dialogData = dialogData;
@@ -180,7 +179,9 @@ public class PlayerCustomClickScriptEvent extends ScriptEvent implements Listene
     }
 
     private static YamlConfiguration getButtonSection(DialogScriptContainer container, DialogScriptHelper.DialogData dialogData, String buttonPath) {
-        if (dialogData == null) return null;
+        if (dialogData == null) {
+            return container == null ? null : container.getConfigurationSection(buttonPath);
+        }
 
         int firstDot = buttonPath.indexOf('.');
         if (firstDot >= 0) {
