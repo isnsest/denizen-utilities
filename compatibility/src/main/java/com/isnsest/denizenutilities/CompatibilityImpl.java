@@ -14,8 +14,7 @@ public class CompatibilityImpl extends Compatibility {
         try {
             Class.forName("com.denizenscript.denizen.paper.events.PlayerChangesUncheckedSignScriptEvent");
             type = DenizenType.DENIZENM;
-        } catch (ClassNotFoundException ignored) {
-        }
+        } catch (ClassNotFoundException ignored) {}
     }
 
     @Override
