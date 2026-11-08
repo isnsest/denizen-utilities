@@ -14,7 +14,7 @@ import litebans.api.Events;
 
 public class LiteBansModule implements BridgeModule {
 
-    private static LiteBansListener listener;
+    private static Object listener;
 
     @Override
     public String getPluginName() {
@@ -23,8 +23,9 @@ public class LiteBansModule implements BridgeModule {
 
     @Override
     public void register() {
-        listener = new LiteBansListener();
-        Events.get().register(listener);
+        LiteBansListener liteBansListener = new LiteBansListener();
+        listener = liteBansListener;
+        Events.get().register(liteBansListener);
 
         // Events
         ScriptEvent.registerScriptEvent(LiteBansBansPlayerScriptEvent.class);
