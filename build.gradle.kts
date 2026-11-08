@@ -3,7 +3,7 @@ plugins {
     id("com.gradleup.shadow") version "9.3.1"
 }
 
-val pluginVersion = "2.12.0"
+val pluginVersion = "2.12.1"
 
 allprojects {
     group = "com.isnsest"
